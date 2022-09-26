@@ -18,6 +18,8 @@ module.exports = (app) => {
     const { payload } = context;
     await console.log(payload);
     console.log('In push!');
+    await console.info("Hellooooooo");
+    await console.info(payload);
     app.log.info("A push has been made to the repository!");
     return;
 
