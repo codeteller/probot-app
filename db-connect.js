@@ -16,12 +16,12 @@ const sqlConfig = {
     }
 }
 
-async function connectAndQueryDb() {
+async function connectAndQueryDb(query) {
     try {
         // make sure that any items are correctly URL encoded in the connection string
         console.log("Inside the query")
         await sql.connect(sqlConfig)
-        const result = await sql.query`select * from Persons`
+        const result = await sql.query(query);
         console.dir(result)
         console.log('Query has been made')
     } catch (err) {

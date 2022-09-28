@@ -17,22 +17,25 @@ module.exports = (app) => {
     });
     return context.octokit.issues.createComment(issueComment);
   });
-  
+
   app.on("push", async (context) => {
-    
+
     const { payload } = context;
     console.log(payload);
     // console.log('In push!');
     // await console.info("Hellooooooo");
     // await console.info(payload);
-    dbData = frameData.pushEventData(payload);
+    var dbData = frameData.pushEventData(payload);
     console.log(dbData);
-    // await db.connectAndQueryDb();
+    // Have one table for Source and Eventtype values
+    var query = `INSERT INTO PUSH (EventName, EventId, Source, EventType, TimeCreated, Payload) values('${dbData.eventName}', '${dbData.eventId}', 1, 1, '${dbData.timeCreated}', '${dbData.payloadValue}')`;
+    console.log(query)
+    await db.connectAndQueryDb(query);
     app.log.info("A push has been made to the repository!");
     return;
 
   });
-  
+
   // Just changing the code is not changing the settings. We have to change the access settings from the app settings!
   // permission and subscribe
   // Then you have to review and allow those permissions!
@@ -41,7 +44,7 @@ module.exports = (app) => {
 
   //In package.json we have no type. Hence this app is of CJS format and not module format
   app.on("pull_request", async (context) => {
-    
+
     app.log.info("A commit has been made to the repository!")
     return;
   });
