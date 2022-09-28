@@ -2,6 +2,11 @@
  * This is the main entrypoint to your Probot app
  * @param {import('probot').Probot} app
  */
+
+const db = require("./db-connect")
+
+const frameData = require("./frame-db-data")
+
 module.exports = (app) => {
   // Your code here
   app.log.info("Yay, the app was loaded!");
@@ -16,10 +21,13 @@ module.exports = (app) => {
   app.on("push", async (context) => {
     
     const { payload } = context;
-    await console.log(payload);
-    console.log('In push!');
-    await console.info("Hellooooooo");
-    await console.info(payload);
+    console.log(payload);
+    // console.log('In push!');
+    // await console.info("Hellooooooo");
+    // await console.info(payload);
+    dbData = frameData.pushEventData(payload);
+    console.log(dbData);
+    // await db.connectAndQueryDb();
     app.log.info("A push has been made to the repository!");
     return;
 
@@ -30,6 +38,8 @@ module.exports = (app) => {
   // Then you have to review and allow those permissions!
   // How to define it in default?
   // Is changing in app.yml will do that?
+
+  //In package.json we have no type. Hence this app is of CJS format and not module format
   app.on("pull_request", async (context) => {
     
     app.log.info("A commit has been made to the repository!")
