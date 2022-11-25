@@ -7,6 +7,8 @@ const db = require("./db-connect")
 
 const frameData = require("./frame-db-data")
 
+const {busConnector}  = require("./bus-connector")
+
 //context.octokit is an instance of the @octokit/rest Node.js module, and allows you to do almost anything programmatically that you can do through a web browser.
 
 module.exports = (app) => {
@@ -17,6 +19,13 @@ module.exports = (app) => {
     const issueComment = context.issue({
       body: "Thanks for opening this issue hello!",
     });
+    const { payload } = context;
+    const message = [
+      {
+        "body": payload
+      }
+    ];
+    await busConnector(message, "commit");
     return context.octokit.issues.createComment(issueComment);
   });
 

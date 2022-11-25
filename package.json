@@ -16,6 +16,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@azure/service-bus": "^7.7.3",
     "@probot/adapter-azure-functions": "^1.0.23",
     "moment": "^2.29.4",
     "mssql": "^9.0.1",
