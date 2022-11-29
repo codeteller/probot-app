@@ -1,25 +1,28 @@
 const moment = require('moment')
 
 const dateTimeFormat = 'YYYY-MM-DD hh:mm:ss';
-// frame json for event Types
 
-function pushEventData(payload) {
+function pushEventData(payload){
     let dbData = {};
-    dbData.eventName = payload.repository.full_name;
+    dbData.orgId = payload.organization.id;
+    dbData.repoId = payload.repository.id;
     dbData.eventId = payload.head_commit.id;
-    dbData.eventType = 1;
+    dbData.eventTypeId = 1;
     creationTime = moment(payload.head_commit.timestamp).format(dateTimeFormat);
     dbData.timeCreated = creationTime;
-    dbData.payloadValue = { 'message': payload.head_commit.message };
+    dbData.payloadValue = {"message": payload.head_commit.message};
+    //console.log(dbData);
     return dbData;
 }
 
-// Framing data for even when pull request opens
+// pull_request : open
+
 function pullRequestOpen(payload, commitsArray) {
     let dbData = {};
-    dbData.eventName = payload.repository.full_name;
+    dbData.orgId = payload.organization.id;
+    dbData.repoId = payload.repository.id;
     dbData.eventId = payload.pull_request.id;
-    dbData.eventType = 5;
+    dbData.eventTypeId = 5;
     creationTime = moment(payload.pull_request.created_at).format(dateTimeFormat);
     dbData.timeCreated = creationTime;
     // framing payload
@@ -33,11 +36,14 @@ function pullRequestOpen(payload, commitsArray) {
 
 }
 
+// pull_request : merged
+
 function pullRequestClosed(payload) {
     let dbData = {};
-    dbData.eventName = payload.repository.full_name;
+    dbData.orgId = payload.organization.id;
+    dbData.repoId = payload.repository.id;
     dbData.eventId = payload.pull_request.id;
-    dbData.eventType = 6;
+    dbData.eventTypeId = 6;
     dbData.timeCreated = null;
     //framing payload
     dbData.payload = {
@@ -48,11 +54,14 @@ function pullRequestClosed(payload) {
     return dbData;
 }
 
+// pull_request_review : submitted
+
 function pullRequestReview(payload) {
     let dbData = {};
-    dbData.eventName = payload.repository.full_name;
+    dbData.orgId = payload.organization.id;
+    dbData.repoId = payload.repository.id;
     dbData.eventId = payload.review.id;
-    dbData.eventType = 2;
+    dbData.eventTypeId = 2;
     creationTime = moment(payload.review.submitted_at).format(dateTimeFormat);
     dbData.timeCreated = creationTime;
     dbData.payload = {
@@ -61,8 +70,44 @@ function pullRequestReview(payload) {
     return dbData;
 }
 
+// check_run : completed
 
-exports.pushEventData = pushEventData;
-exports.pullRequestOpen = pullRequestOpen;
-exports.pullRequestClosed = pullRequestClosed;
-exports.pullRequestReview = pullRequestReview;
+function check_run(payload) {
+    let dbData = {};
+    dbData.orgId = payload.organization.id;
+    dbData.repoId = payload.repository.id;
+    dbData.eventId = payload.check_run.id;
+    dbData.eventTypeId = 3;
+    creationTime = moment(payload.check_run.started_at).format(dateTimeFormat);
+    dbData.timeCreated = creationTime;
+    dbData.payload = {
+        'head_sha' : payload.head_sha.sha, 
+        'name' : payload.check_run.name,
+        'time_completed' : payload.check_run.completed_at,
+        'status' : payload.check_run.status
+    }
+    return dbData;
+}
+
+// status
+
+function status(payload) {
+    let dbData = {};
+    dbData.orgId = payload.organization.id;
+    dbData.repoId = payload.repository.id;
+    dbData.eventId = payload.check_run.id;
+    dbData.eventTypeId = 4;
+    creationTime = moment(payload.updated_at).format(dateTimeFormat);
+    dbData.timeCreated = creationTime;
+    dbData.payload = {
+        'sha': payload.sha,
+        'name': payload.context,
+        'status': payload.state
+    }
+    return dbData;
+}
+
+// release
+
+
+module.exports = { pushEventData, pullRequestOpen, pullRequestClosed, pullRequestReview, check_run, status }
