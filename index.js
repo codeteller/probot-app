@@ -116,6 +116,30 @@ module.exports = (app) => {
     console.log(dbData);
     return;
   });
+  
+    // check_run
+
+  app.on("check_run.completed", async (context) => {
+
+    const {payload} = context;
+    var dbData = checkRun(payload);
+    console.log("Following is the check_run data")
+    console.log(dbData);
+    return;
+  });
+
+  app.on("status", async (context) => {
+    
+    const { payload } = context;
+    var dbData = status(payload);
+    console.log("Following data is from status event");
+    console.log(dbData);
+    return;
+  });
+
+  // status
+
+  // release
 
   // For more information on building apps:
   // https://probot.github.io/docs/
